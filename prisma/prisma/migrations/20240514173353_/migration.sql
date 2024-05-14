@@ -21,11 +21,12 @@ CREATE TABLE "Message" (
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "name" TEXT,
+    "username" TEXT,
     "email" TEXT,
     "token" TEXT,
     "password" TEXT,
-    "tokenDateExpiry" TIMESTAMP(3) NOT NULL,
+    "verifyCode" TEXT,
+    "tokenDateExpiry" TIMESTAMP(3),
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "isAcceptingMessage" BOOLEAN NOT NULL,
 
