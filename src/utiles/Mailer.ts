@@ -2,7 +2,6 @@ import nodemailer from 'nodemailer';
 
 export  async function sendEmail({email , emailType , userTd}){
         try{
-
             const transporter = nodemailer.createTransport({
                 host: "smtp.ethereal.email",
                 port: 587,
@@ -15,9 +14,9 @@ export  async function sendEmail({email , emailType , userTd}){
 
               const demoMail = {
                 from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', 
-                to: email, // list of receivers
+                to: email, 
                 subject: emailType === "VERIFY" ? "verify email" : "reset password" , 
-                html: "<b>Hello world?</b>", // html body
+                html: "<b>Hello world?</b>", 
               }
 
               const mailresponse = await transporter.sendEmail(demoMail);
