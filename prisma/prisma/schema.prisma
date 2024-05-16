@@ -40,5 +40,5 @@ model User {
   tokenDateExpiry    DateTime?
   isVerified         Boolean   @default(false)
   isAcceptingMessage Boolean
-  messages           Message[] // Define the relation
+  messages           Message[] 
 }
