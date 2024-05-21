@@ -3,6 +3,7 @@ import { usernameValidation } from '../../../schemas/signupSchema'
 import { z } from 'zod'
 import { PrismaClient } from '@prisma/client';
 
+
 const userUniqueName = z.object({
     username: usernameValidation
 })
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
         if (!result.success) {
             const error = result.error.format().username?._errors || []
             return Response.json({
-                message: 'errro during cathing result'
+                message: error
             }, {
                 status: 400
             })
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
         } else {
             return Response.json({
                 success: true,
-                message: 'unique username'
+                message: 'Username is unique'
             }, {
                 status: 200
             })
