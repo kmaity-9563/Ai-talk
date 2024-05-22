@@ -1,15 +1,16 @@
-"use client"
-import React, { useEffect, useState } from 'react'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { useDebounceCallback } from 'usehooks-ts'
-import axios, { AxiosError } from 'axios'
-import { ApiResponse } from '@/types/ApiResponse'
-import { signupSchema } from '@/schemas/signupSchema'
-import { z } from "zod"
-import { useToast } from "@/components/ui/use-toast"
-import { useRouter } from 'next/navigation'
-import { Button } from "@/components/ui/button"
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useDebounceCallback } from 'usehooks-ts';
+import axios, { AxiosError } from 'axios';
+import { ApiResponse } from '@/types/ApiResponse';
+import { signupSchema } from '@/schemas/signupSchema';
+import { z } from 'zod';
+import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -17,68 +18,75 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Loader2 } from 'lucide-react'
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const SignupForm = () => {
-  const [username, setUsername] = useState('')
-  const [usernamemessage, setUsernamemessage] = useState('')
-  const [loading, setLoading] = useState(false)
-  const debounce = useDebounceCallback(setUsername, 500)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
-  const router = useRouter()
+  const [username, setUsername] = useState('');
+  const [usernamemessage, setUsernamemessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const debounce = useDebounceCallback(setUsername, 500);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      password: "",
+      username: '',
+      email: '',
+      password: '',
     },
-  })
+  });
 
   useEffect(() => {
     const checkUsernameUnique = async () => {
       if (username) {
-        setLoading(true)
-        setUsernamemessage('')
+        setLoading(true);
+        setUsernamemessage('');
         try {
-          const response = await axios.get<ApiResponse>(`/api/check-unique-user?username=${username}`)
-          setUsernamemessage(response.data.message)
+          const response = await axios.get<ApiResponse>(
+            `/api/check-unique-user?username=${username}`
+          );
+          console.log(response.data);
+          setUsernamemessage(response.data.message);
         } catch (error) {
-          const Axioserror = error as AxiosError<ApiResponse>
-          setUsernamemessage(Axioserror.response?.data.message ?? 'axios error')
+          const Axioserror = error as AxiosError<ApiResponse>;
+          setUsernamemessage(
+            Axioserror.response?.data.message ?? 'axios error'
+          );
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
       }
-    }
-    checkUsernameUnique()
-  }, [username])
+    };
+    checkUsernameUnique();
+  }, [username]);
 
   const onSubmit = async (value: z.infer<typeof signupSchema>) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const response = await axios.post(`/api/sign-up`, value)
+      console.log('value', value);
+      const response = await axios.post<ApiResponse>('/api/signup', value);
+      console.log('response ', response.data);
       toast({
-        title: "Signup successful",
+        title: 'Signup successful',
         description: response.data.message,
-      })
-      router.replace(`/verify/${value.username}`)
+      });
+      router.replace(`/verify/${value.username}`);
     } catch (error) {
-      const Axioserror = error as AxiosError<ApiResponse>
+      const Axioserror = error as AxiosError<ApiResponse>;
       toast({
-        title: "Signup failed",
+        title: 'Signup failed',
         description: Axioserror.response?.data.message ?? 'axios error',
-        variant: 'destructive'
-      })
+        variant: 'destructive',
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-800">
@@ -98,12 +106,13 @@ const SignupForm = () => {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input  placeholder="username"
+                    <Input
+                      placeholder="username"
                       {...field}
-                     onChange = { (event) =>{
-                      field.onChange(event) ;
-                      debounce(event.target.value);
-                    }  }
+                      onChange={(event) => {
+                        field.onChange(event);
+                        debounce(event.target.value);
+                      }}
                     />
                   </FormControl>
                   {loading && <Loader2 className="animate-spin" />}
@@ -148,11 +157,7 @@ const SignupForm = () => {
               )}
             />
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                'Sign up'
-              )}
+              {isSubmitting ? <Loader2 className="animate-spin" /> : 'Sign up'}
             </Button>
           </form>
         </Form>
@@ -166,7 +171,7 @@ const SignupForm = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SignupForm
+export default SignupForm;

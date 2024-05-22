@@ -13,7 +13,7 @@ export  async function sendEmail({email , emailType , userTd}){
               });
 
               const demoMail = {
-                from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', 
+                from: '"" <maddison53@ethereal.email>', 
                 to: email, 
                 subject: emailType === "VERIFY" ? "verify email" : "reset password" , 
                 html: "<b>Hello world?</b>", 
