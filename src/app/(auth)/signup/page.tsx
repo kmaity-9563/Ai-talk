@@ -80,7 +80,7 @@ const SignupForm = () => {
       const Axioserror = error as AxiosError<ApiResponse>;
       toast({
         title: 'Signup failed',
-        description: Axioserror.response?.data.message ?? 'axios error',
+        description: Axioserror.response?.data.message || 'axios error',
         variant: 'destructive',
       });
     } finally {

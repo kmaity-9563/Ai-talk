@@ -1,8 +1,9 @@
-import { Message} from '@/models/userModel'
+import {  Message } from "@prisma/client";
+
 
 export interface ApiResponse {
-    success: boolean,
-    message: string,
-    isAccepted: boolean,
-    messages? : Array<Message>
+  success: boolean;
+  message: string;
+  isAccepted: boolean;
+  messages?: Array<Message>;
 }

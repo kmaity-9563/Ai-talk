@@ -1,7 +1,9 @@
 "use server"
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcrypt";
 import { sendVerificationEmail } from '@/helpers/sendVerificationEmail';
+import {sendEmail} from '../../../utiles/Mailer'
+import { User } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
@@ -32,14 +34,17 @@ export async function POST(request: Request) {
         email: email,
       },
     });
+    console.log("userExistByEmail", userExistByEmail)
 
     const hashedPassword = await bcrypt.hash(password, 10);
     let token = Math.floor(100000 + Math.random() * 900000).toString();
-    const tokenExpiryDate = new Date(Date.now() + 360000); // 1 hour expiry
+    console.log("token in signup", token)
+    const tokenExpiryDate = new Date(Date.now() + 3600000); // 1 hour expiry
+    let userData ;
 
     if (userExistByEmail) {
       if (!userExistByEmail.isVerified) {
-        await prisma.user.update({
+       const useres =  await prisma.user.update({
           where: {
             id: userExistByEmail.id,
           },
@@ -49,6 +54,7 @@ export async function POST(request: Request) {
             tokenDateExpiry: tokenExpiryDate,
           },
         });
+
       } else {
         await prisma.user.update({
           where: {
@@ -62,7 +68,7 @@ export async function POST(request: Request) {
         });
       }
     } else {
-      await prisma.user.create({
+      userData = await prisma.user.create({
         data: {
           username: username,
           password: hashedPassword,
@@ -74,10 +80,14 @@ export async function POST(request: Request) {
         },
       });
     }
-            console.log("email, username, token" ,email, username, token)
-    const emailResponse = await sendVerificationEmail(email, username, token);
 
-    if (emailResponse.success) {
+    console.log("userData token", userData?.token)
+    let emailResponse;
+
+      emailResponse = await sendEmail({ email, emailType: "VERIFY", token });
+  
+    console.log(emailResponse)
+    if (emailResponse.response) {
       return new Response(
         JSON.stringify({
           message: 'Email sent!',

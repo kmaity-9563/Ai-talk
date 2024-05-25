@@ -22,7 +22,7 @@ export async function POST(request: Request) {
             })
         }
         console.log('user' , user)
-        const isValidCode = user.verifyCode === code
+        const isValidCode = user.token === code
         const isnotExpiredCode = user.tokenDateExpiry ? new Date(user.tokenDateExpiry) > new Date() : false;
 
         if (isValidCode && isnotExpiredCode) {

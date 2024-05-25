@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { PrismaClient } from '@prisma/client';
 import {
   Form,
   FormField,
@@ -19,6 +20,7 @@ import * as z from 'zod';
 import { verifySchema } from '@/schemas/verfiySchema';
 
 export default function VerifyAccount() {
+  const prisma = new PrismaClient()
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const { toast } = useToast();
@@ -28,6 +30,9 @@ export default function VerifyAccount() {
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
     try {
+      console.log("data in verify page" , data.code)
+    const verifyCode = data.code
+    console.log("verifyCode",verifyCode)
       const response = await axios.post<ApiResponse>(`/api/verify-code`, {
         username: params.username,
         code: data.code,
@@ -38,7 +43,7 @@ export default function VerifyAccount() {
         description: response.data.message,
       });
 
-      router.replace('/sign-in');
+      router.replace('/signin');
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
@@ -59,6 +64,7 @@ export default function VerifyAccount() {
             Verify Your Account
           </h1>
           <p className="mb-4">Enter the verification code sent to your email</p>
+       
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

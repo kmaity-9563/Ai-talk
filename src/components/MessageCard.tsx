@@ -27,64 +27,60 @@ import {Message} from '@prisma/client'
 
 type mesageProps = {
     message: Message ,
-    onMessagDelete : ( messageId :string ) => void
+    onMessageDelete : ( messageId :string ) => void
 }
 
-const MessageCard = ({message , onMessagDelete} : mesageProps) => {
+const MessageCard = ({ message, onMessageDelete } : mesageProps) => {
     const { toast } = useToast();
 
-
-    const handleDeleteConfirm = async (  ) => {
+    const handleDeleteConfirm = async () => {
         try {
+            
+            console.log("message id in delete func", message.id)
             const response = await axios.delete<ApiResponse>(
-                `/api/delete-message/${message}`
-            )
+                `/api/delete-message?deleteMessage=${message.id}`
+            );
             toast({
-                tittle : response.data.message
-            })
-            onMessagDelete(message?.id)
+                title: "Message deleted successfully",
+               
+            });
+            console.log("responsein delete function",response.data)
+            let messageId = message.id.toString()
+            onMessageDelete(messageId);
         } catch (error) {
-                const AxiosError = error as AxiosError<ApiResponse>
-                toast({
-                    title: 'Error',
-                    description:
-                    AxiosError.response?.data.message ?? 'Failed to delete message',
-                    variant: 'destructive',
-                  });
+            const axiosError = error as AxiosError<ApiResponse>;
+            toast({
+                title: 'Error',
+                description: axiosError.response?.data.message ?? 'Failed to delete message',
+                variant: 'destructive',
+            });
         }
-    }
+    };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Card Title</CardTitle>
+        <Card className='mx-5 my-4'>
+            <CardHeader className='flex justify-between items-center'>
+                <CardTitle>{message.content}</CardTitle>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="destructive"><X /></Button>
+                        <Button variant="destructive">Delete</Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete your
-                                account and remove your data from our servers.
-                            </AlertDialogDescription>
+                            <AlertDialogTitle>Delete Message</AlertDialogTitle>
                         </AlertDialogHeader>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete this message?
+                        </AlertDialogDescription>
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction  onClick={handleDeleteConfirm}>Continue</AlertDialogAction>
+                            <AlertDialogAction onClick={handleDeleteConfirm}>Delete</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
-                <CardDescription>Card Description</CardDescription>
             </CardHeader>
-            <CardContent>
-                <p>Card Content</p>
-            </CardContent>
-
         </Card>
+    );
+};
 
-    )
-}
-
-export default MessageCard
+export default MessageCard;

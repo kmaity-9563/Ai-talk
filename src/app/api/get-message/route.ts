@@ -1,67 +1,57 @@
+"use server";
 import { getServerSession } from "next-auth";
 import { authOptions } from '../auth/[...nextauth]/options';
 import { PrismaClient } from "@prisma/client";
-// import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 
-export default async function handler(req: Request) {
+const prisma = new PrismaClient();
+
+export async function GET(req: Request) {
     try {
-        const prisma = new PrismaClient();
         const session = await getServerSession(authOptions);
         const user = session?.user;
-
+        
         if (!user) {
-            return Response.json({
+            return NextResponse.json({
                 message: 'Unauthorized',
                 success: false
-            }, {
-                status: 401,
-            });
+            }, { status: 401 });
         }
 
+        // Find the user in the database by email, as session user object may not have id directly
         const findUser = await prisma.user.findUnique({
-            where: {
-                id: user._id,
-            },
-            include: {
-                messages: {
-                    orderBy: {
-                        createdAt: 'desc'
-                    }
-                }
-            }
+            where: { email: user.email }
         });
 
         if (!findUser) {
-            return Response.json({
+            return NextResponse.json({
                 message: 'User not found',
                 success: false
-            }, {
-                status: 401,
-            });
+            }, { status: 404 });
         }
 
-        if (!findUser.messages || findUser.messages.length === 0) {
-            return Response.json({
+        const findMessage = await prisma.message.findMany({
+            where: { userId: findUser.id },
+            orderBy: { createdAt: 'desc' } 
+        });
+
+
+        if (!findMessage) {
+            return NextResponse.json({
                 message: 'No messages found for the user',
                 success: false
-            }, {
-                status: 401,
-            });
+            }, { status: 404 });
         }
 
-        return Response.json({
-            message: findUser.messages,
+        return NextResponse.json({
+            message: findMessage,
             success: true
-        }, {
-            status: 200,
-        });
+        }, { status: 200 });
     } catch (error: any) {
         console.error(error);
-        return Response.json({
+        return NextResponse.json({
             message: 'Internal server error',
             success: false
-        }, {
-            status: 401,
-        });
+        }, { status: 500 });
     }
 }
