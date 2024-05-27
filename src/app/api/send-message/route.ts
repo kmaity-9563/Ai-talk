@@ -1,14 +1,11 @@
+"use server"
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    console.log("hey new message")
     const { username, content } = await req.json();
-    console.log('username', username);
-    console.log('content', content);
-
     const user = await prisma.user.findFirst({
       where: {
         username: username,
@@ -56,7 +53,6 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error:', error);
     return new Response(
       JSON.stringify({
         message: 'Internal server error',

@@ -27,12 +27,11 @@ const Page = () => {
   const username = (session && session.user) ? (session.user as User).username : '';
 
   const isAcceptingMessage = useCallback(async () => {
-    console.log("isAcceptingMessage")
     setIsSwitchLoading(true);
     setLoading(true);
     try {
       const res = await axios.get<ApiResponse>('/api/accept-message');
-      setValue('acceptMessages', res.data.isAccepted);
+      setValue('acceptMessages', res.data.isAcceptingMessage);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
@@ -50,7 +49,6 @@ const Page = () => {
     setLoading(true);
     try {
       const res = await axios.get<ApiResponse>('/api/get-message');
-
       setMessages(res?.data?.message);
       if (refresh) {
         toast({
@@ -74,7 +72,7 @@ const Page = () => {
     if (!session || !session.user) return;
     isAcceptingMessage();
     getMessages();
-  }, [session, isAcceptingMessage, getMessages]);
+  }, [session, isAcceptingMessage, getMessages,setIsSwitchLoading]);
 
   const handleDeleteMessage = (messageId: string) => {
     setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== messageId));
@@ -83,13 +81,11 @@ const Page = () => {
 
   const handleSwitchChange = async () => {
     try {
-      console.log("handle swith clicked")
       const res = await axios.post<ApiResponse>('/api/accept-message', {
         acceptMessages: !acceptMessages
       });
-      console.log("handle swith clicked after fetch")
-      console.log("data in handel switch", res.data.isAccepted);
-      setValue('acceptMessages', res.data.isAccepted);
+
+      setValue('acceptMessages', res.data.isAcceptingMessage);
       toast({
         title: res.data.message,
         variant: 'default',
@@ -112,7 +108,7 @@ const Page = () => {
   }, [username]);
 
   if (!profileUrl) {
-    return null; // or a loading indicator, or fallback URL
+    return null; 
   }
   const copyToClipboard = async () => {
     urlRef.current;
@@ -153,8 +149,8 @@ const Page = () => {
       <Button
         className="mt-4"
         variant="outline"
-        onClick={(e) => {
-          e.preventDefault();
+        onClick={() => {
+          // e.preventDefault();
           getMessages(true);
         }}
       >
@@ -165,8 +161,10 @@ const Page = () => {
         )}
       </Button>
       <div className="mt-4">
-        {messages.length > 0 ? (
+      
 
+        {messages.length > 0 ? (
+           
           messages.map((message, index) => (
             <MessageCard
               key={index} // Make sure to provide a unique key when mapping over an array

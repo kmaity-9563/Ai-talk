@@ -4,6 +4,6 @@ import {  Message } from "@prisma/client";
 export interface ApiResponse {
   success: boolean;
   message: string;
-  isAccepted: boolean;
+  isAcceptingMessage: boolean;
   messages?: Array<Message>;
 }

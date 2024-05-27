@@ -1,5 +1,4 @@
-'use client';
-
+'use client'
 import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -59,12 +58,13 @@ export default function Page() {
   };
 
   const [isLoading, setIsLoading] = useState(false);
+  const [content , setValue] = useState("")
 
-  const onSubmit = async (data: z.infer<typeof messageSchema>) => {
-    setIsLoading(true);
+const onSubmit = async() => {
+  setIsLoading(true);
     try {
       const response = await axios.post<ApiResponse>('/api/send-message', {
-        ...data,
+        content,
         username,
       });
 
@@ -84,7 +84,8 @@ export default function Page() {
     } finally {
       setIsLoading(false);
     }
-  };
+}
+
 
   const fetchSuggestedMessages = async () => {
     try {
@@ -100,39 +101,18 @@ export default function Page() {
       <h1 className="text-4xl font-bold mb-6 text-center">
         Public Profile Link
       </h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Send Anonymous Message to @{username}</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Write your anonymous message here"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex justify-center">
-            {isLoading ? (
-              <Button disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </Button>
-            ) : (
-              <Button type="submit" disabled={isLoading || !messageContent}>
-                Send It
-              </Button>
-            )}
-          </div>
-        </form>
-      </Form>
+      <div className='flex justify-center '>
+      <input placeholder='enter your message'  className='w-full h-12 border border-slate-500 px-5 ' value={content}
+      onChange={(e) => {
+        setValue(e.target.value)
+      }}
+       />
+       <button onClick={onSubmit}
+        className='w-40 ml-3 rounded-md  bg-black text-white'>
+          Send Messages
+        </button>
+       </div>
+  
 
       <div className="space-y-4 my-8">
         <div className="space-y-2">

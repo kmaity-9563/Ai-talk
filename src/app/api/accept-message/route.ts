@@ -16,8 +16,7 @@ export async function POST(req: Request) {
         const userID = user.id; 
 
         const body = await req.json();
-        const isAcceptingMessage = body.isAcceptingMessage;
-
+        const isAcceptingMessage = body.acceptMessages;
         const updatedUser = await prisma.user.update({
             where: { id: userID },
             data: { isAcceptingMessage }
@@ -47,7 +46,7 @@ export async function GET(req: Request) {
         if (!findUser) {
             return new Response(JSON.stringify({ message: 'User not found', success: false }), { status: 404 });
         }
-
+        console.log("findUser.isAcceptingMessage in server", findUser.isAcceptingMessage)
         return new Response(JSON.stringify({ isAcceptingMessage: findUser.isAcceptingMessage, success: true }), { status: 200 });
     } catch (error: any) {
         console.error("Error in GET /api/accept-message:", error);

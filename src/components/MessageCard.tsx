@@ -33,10 +33,10 @@ type mesageProps = {
 const MessageCard = ({ message, onMessageDelete } : mesageProps) => {
     const { toast } = useToast();
 
+    console.log("message",message)
     const handleDeleteConfirm = async () => {
         try {
             
-            console.log("message id in delete func", message.id)
             const response = await axios.delete<ApiResponse>(
                 `/api/delete-message?deleteMessage=${message.id}`
             );
@@ -44,7 +44,6 @@ const MessageCard = ({ message, onMessageDelete } : mesageProps) => {
                 title: "Message deleted successfully",
                
             });
-            console.log("responsein delete function",response.data)
             let messageId = message.id.toString()
             onMessageDelete(messageId);
         } catch (error) {

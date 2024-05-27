@@ -17,7 +17,6 @@ export async function POST(request: Request) {
         isVerified: true,
       },
     });
-    console.log("userVerifiedByUsername", userVerifiedByUsername);
 
     if (userVerifiedByUsername) {
       return new Response(
@@ -34,11 +33,9 @@ export async function POST(request: Request) {
         email: email,
       },
     });
-    console.log("userExistByEmail", userExistByEmail)
-
+  
     const hashedPassword = await bcrypt.hash(password, 10);
     let token = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log("token in signup", token)
     const tokenExpiryDate = new Date(Date.now() + 3600000); // 1 hour expiry
     let userData ;
 
@@ -81,12 +78,10 @@ export async function POST(request: Request) {
       });
     }
 
-    console.log("userData token", userData?.token)
     let emailResponse;
 
       emailResponse = await sendEmail({ email, emailType: "VERIFY", token });
   
-    console.log(emailResponse)
     if (emailResponse.response) {
       return new Response(
         JSON.stringify({
@@ -97,7 +92,6 @@ export async function POST(request: Request) {
       );
     }
   } catch (error) {
-    console.log('error', error);
     return new Response(
       JSON.stringify({
         success: false,

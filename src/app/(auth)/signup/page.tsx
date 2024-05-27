@@ -50,7 +50,6 @@ const SignupForm = () => {
           const response = await axios.get<ApiResponse>(
             `/api/check-unique-user?username=${username}`
           );
-          console.log(response.data);
           setUsernamemessage(response.data.message);
         } catch (error) {
           const Axioserror = error as AxiosError<ApiResponse>;
@@ -68,9 +67,7 @@ const SignupForm = () => {
   const onSubmit = async (value: z.infer<typeof signupSchema>) => {
     setIsSubmitting(true);
     try {
-      console.log('value', value);
       const response = await axios.post<ApiResponse>('/api/signup', value);
-      console.log('response ', response.data);
       toast({
         title: 'Signup successful',
         description: response.data.message,
